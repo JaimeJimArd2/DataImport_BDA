@@ -22,7 +22,6 @@ MONGO_PASSWORD = "secret"
 
 mongo = MongoDBOperations(MONGO_DATABASE, MONGO_PORT, MONGO_USER, MONGO_PASSWORD)
 
-
 while True:
     print("\nMenu:")
     print("1. Personas y sus roles en una empresa concreta.")
@@ -54,6 +53,14 @@ while True:
 
     elif choice == '4':
         consul4=mongo.consulta4(input('Introduzca el nombre de un equipo. [Ej: Team_2]: '))
+        
+        for i in consul4:
+            perid = i["person_id"]
+            rol = i["rol"]
+            
+            nombre = neo4j.consulta4(perid)
+            for producto in nombre:
+                print(f"· {producto[0]}: {rol}")
 
     elif choice == '5':
         mongo.consulta5()
@@ -62,17 +69,31 @@ while True:
         mongo.consulta6()
 
     elif choice == '7':
-        db.consulta7(input('Introduzca un nivel de profficiency. [Ej: Beginner]: '))
+        accu=input('Introduzca un nivel de profficiency. [Ej: Beginner]: ')
+        result=db.consulta7(accu)
+        for i in result:
+            nombre = neo4j.consulta4(i[1])
+            for producto in nombre:
+                print(f"· {producto[0]}: es {accu} en {i[0]}")
 
     elif choice == '8':
-        db.consulta8()
+        result=db.consulta8()
+        for i in result:
+            nombre1 = neo4j.consulta4(i[0])
+            nombre2 = neo4j.consulta4(i[1])
+            for producto in nombre1:
+                nom1= producto[0]
+            for producto in nombre2:
+                nom2= producto[0]
+            print(f'{nom1} y {nom2} comparten {i[2]}')
+
 
     elif choice == '9':
         mongo.consulta9()
 
     elif choice == '10':
         loc=db.consulta10(input('Introduzca el nombre de una localización. [Ej: Location_6]: '))
-        mongo.consulta10(loc[0])
+        mongo.consulta10(loc[0], uri, user, password)
 
     else:
         print("Invalid choice. Please select a valid option.")

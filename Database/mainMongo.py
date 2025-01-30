@@ -63,19 +63,7 @@ class MongoDBOperations:
         
         collection2 = self.db['works_in_team']
         results = collection2.find({"team_id": team_id}, {"_id": 0, "person_id": 1, "rol": 1})
-        uri = "bolt://localhost:7687"  
-        user = "neo4j"
-        password = "password"
-        neo4j = Neo4jCRUD(uri, user, password)
-
-        for i in results:
-            perid = i["person_id"]
-            rol = i["rol"]
-            
-            nombre = neo4j.consulta4(perid)
-            for producto in nombre:
-                print(f"· {producto[0]}: {rol}")
-
+        return(results)
 
     def consulta5(self):
         collection = self.db['teams']
@@ -145,13 +133,11 @@ class MongoDBOperations:
         for i in results:
             tipos = []
             for e in i['pokemones']:
-                #print(e)
                 for u in self.fetch_pokemon_data(e)['Types']:
                     if u not in tipos:
                        tipos.append(u) 
             equipotipos[i['_id']] = tipos
             tipos = []
-            #print('--------------')
 
         collection2 = self.db['teams']
         pipeline = [
@@ -184,7 +170,7 @@ class MongoDBOperations:
             print(f'{equipotipos[max(equipotipos)]}')
             
 
-    def consulta10(self, loca):
+    def consulta10(self, loca, uri, user, password):
             collection = self.db['projects']
             pipeline = [
                 {
@@ -218,9 +204,6 @@ class MongoDBOperations:
                         }
                     ]
                     for u in collection2.aggregate(pipetemp):
-                        uri = "bolt://localhost:7687"  
-                        user = "neo4j"
-                        password = "password"
                         neo4j = Neo4jCRUD(uri, user, password)
                         laburador = neo4j.consulta10(u['person_id'])
                         for u in laburador:
